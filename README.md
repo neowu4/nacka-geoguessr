@@ -36,6 +36,6 @@ Utan nyckel används Googles vanliga Street View-inbäddning, som visar vägnamn
 
 ## Data
 
-- 389 platser (minst 30 per område), framtagna ur Googles Street View-täckning inom Nacka kommuns gräns, med vägnamn från OpenStreetMap (via OSRM).
+- 403 platser (minst 30 per område), framtagna ur Googles Street View-täckning inom Nacka kommuns gräns, med vägnamn från OpenStreetMap (via OSRM).
 - Kommungränsen kommer från OpenStreetMap (© OpenStreetMap-bidragsgivare, ODbL).
 - Allt ligger inbäddat i `index.html`; `data.json` är samma data i separat fil.
