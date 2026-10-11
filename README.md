@@ -2,6 +2,10 @@
 
 GeoGuessr fast bara för **Nacka kommun**. Du släpps någonstans i Street View – Sickla, Boo, Saltsjöbaden, Fisksätra, Älta, Orminge… – och ska sätta en nål på kartan där du tror att du är.
 
+## Spela direkt
+
+👉 **https://neowu4.github.io/nacka-geoguessr/**
+
 ## Kör lokalt
 
 Kräver bara Python 3 (finns redan på Mac).
