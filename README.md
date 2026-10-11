@@ -23,7 +23,7 @@ python3 -m http.server 8765
 ## Så funkar spelet
 
 - 5 rundor, max 5 000 poäng per runda. Ju närmare du gissar, desto fler poäng.
-- **Område:** spela hela Nacka eller välj en eller flera delar: Sickla, Nacka Forum, Jarlaberg, Ektorp & Duvnäs, Björknäs, Tollare & Lännersta, Orminge & Boo öst, Saltsjöbaden & Fisksätra, Älta.
+- **Område:** spela hela Nacka eller välj en eller flera delar: Sickla, Nacka Forum, Jarlaberg, Ektorp & Duvnäs, Skuru, Björknäs, Tollare & Lännersta, Orminge & Boo öst, Saltsjöbaden & Fisksätra, Älta.
 - **Tid:** ingen tidsgräns, 2 min eller 1 min per runda.
 - **Låst vy (NMPZ):** du kan inte röra dig eller vrida kameran.
 - **↺ Till start** tar dig tillbaka till startpunkten, **⇄ Byt plats** om en bild inte laddar.
@@ -35,6 +35,6 @@ Utan nyckel används Googles vanliga Street View-inbäddning, som visar vägnamn
 
 ## Data
 
-- 371 platser (minst 30 per område), framtagna ur Googles Street View-täckning inom Nacka kommuns gräns, med vägnamn från OpenStreetMap (via OSRM).
+- 389 platser (minst 30 per område), framtagna ur Googles Street View-täckning inom Nacka kommuns gräns, med vägnamn från OpenStreetMap (via OSRM).
 - Kommungränsen kommer från OpenStreetMap (© OpenStreetMap-bidragsgivare, ODbL).
 - Allt ligger inbäddat i `index.html`; `data.json` är samma data i separat fil.
