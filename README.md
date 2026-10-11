@@ -4,15 +4,15 @@ GeoGuessr fast bara för **Nacka och Värmdö**. Du släpps någonstans i Street
 
 ## Spela direkt
 
-👉 **https://neowu4.github.io/nacka-geoguessr/**
+👉 **https://neowu4.github.io/nackavarmdo-geoguessr/**
 
 ## Kör lokalt
 
 Kräver bara Python 3 (finns redan på Mac).
 
 ```bash
-git clone https://github.com/neowu4/nacka-geoguessr.git
-cd nacka-geoguessr
+git clone https://github.com/neowu4/nackavarmdo-geoguessr.git
+cd nackavarmdo-geoguessr
 python3 -m http.server 8765
 ```
 
