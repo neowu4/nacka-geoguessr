@@ -25,6 +25,7 @@ python3 -m http.server 8765
 - 5 rundor, max 5 000 poäng per runda. Ju närmare du gissar, desto fler poäng.
 - **Område:** spela hela Nacka eller välj en eller flera delar: Sickla, Nacka Forum, Jarlaberg, Ektorp & Duvnäs, Skuru, Björknäs, Tollare & Lännersta, Orminge & Boo öst, Saltsjöbaden & Fisksätra, Älta.
 - **Tid:** ingen tidsgräns, 2 min eller 1 min per runda.
+- **Ingen gång (NM):** du kan vrida och zooma men inte gå. Utan API-nyckel blockeras nedre delen av bilden (pilarna), så dra i övre delen för att titta runt.
 - **Låst vy (NMPZ):** du kan inte röra dig eller vrida kameran.
 - **↺ Till start** tar dig tillbaka till startpunkten, **⇄ Byt plats** om en bild inte laddar.
 - Mellanslag = gissa / nästa runda. Ditt rekord sparas i webbläsaren.
