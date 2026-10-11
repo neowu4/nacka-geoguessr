@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NackaGuessr</title>
+<title>NackaVärmdöGuessr</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
@@ -35,7 +35,7 @@ button:disabled{background:#3a4652;color:#8796a3;cursor:not-allowed}
 .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent))}
 #start{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 30% 20%,#1d3b2c,var(--bg) 70%);padding:16px}
 .card{background:var(--panel);border:1px solid #ffffff1a;border-radius:18px;padding:28px;max-width:440px;width:100%;text-align:center}
-.card h1{margin:0 0 6px;font-size:40px;letter-spacing:-.03em}.card h1 span{color:var(--accent)}
+.card h1{margin:0 0 6px;font-size:clamp(26px,8vw,40px);letter-spacing:-.03em}.card h1 span{color:var(--accent)}
 .card p{color:var(--muted);line-height:1.5}
 .opts{display:flex;gap:8px;justify-content:center;margin:16px 0;flex-wrap:wrap}
 .areas{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:14px 0 4px}
@@ -48,12 +48,12 @@ table{margin:0 auto 14px;border-collapse:collapse;font-size:14px}td{padding:3px 
 </style></head><body>
 <iframe id="sv2" referrerpolicy="no-referrer-when-downgrade" tabindex="-1"></iframe><iframe id="sv" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe><div id="pano"></div>
 <div id="mask"></div><div id="floor" hidden></div><div id="floorhint" hidden>Ingen gång – dra för att vrida dig, scrolla för att zooma</div>
-<div id="logo">Nacka<span>Guessr</span></div>
+<div id="logo">NackaVärmdö<span>Guessr</span></div>
 <div id="reset" style="display:flex;gap:6px"><button id="back" class="ghost" title="Tillbaka till startpunkten">↺ Till start</button><button id="skip" class="ghost" title="Ingen bild? Byt till en annan plats">⇄ Byt plats</button></div>
 <div id="hud"><div class="chip"><small>Runda</small><span id="round">1/5</span></div><div class="chip"><small>Poäng</small><span id="score">0</span></div><div class="chip" id="timerChip" style="display:none"><small>Tid</small><span id="timer">–</span></div></div>
 <div id="guessbox"><div id="map"></div><button id="guess" disabled>Placera en nål på kartan</button></div>
 <div id="result"><div id="rmap"></div><div id="rpanel"><h2 id="rtitle"></h2><p id="rtext"></p><div class="bar"><i id="rbar"></i></div><div id="rtable"></div><button id="next">Nästa runda</button></div></div>
-<div id="start"><div class="card"><h1>Nacka<span>Guessr</span></h1>
+<div id="start"><div class="card"><h1>NackaVärmdö<span>Guessr</span></h1>
 <p>Du släpps någonstans i Nacka eller Värmdö – Sickla, Boo, Saltsjöbaden, Gustavsberg, Ingarö, Djurö… Titta dig omkring i Street View och sätt en nål där du tror att du är.</p>
 <div class="opts" id="timeopts"><button data-t="0" class="on">Ingen tid</button><button data-t="120">2 min</button><button data-t="60">1 min</button><button data-t="30">30 s</button><button data-t="15">15 s</button><button data-t="10">10 s</button><button data-t="5">5 s</button></div>
 <div class="areas" id="areas"></div>

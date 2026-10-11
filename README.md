@@ -1,4 +1,4 @@
-# NackaGuessr 🗺️
+# NackaVärmdöGuessr 🗺️
 
 GeoGuessr fast bara för **Nacka och Värmdö**. Du släpps någonstans i Street View – Sickla, Boo, Saltsjöbaden, Gustavsberg, Ingarö, Djurö… – och ska sätta en nål på kartan där du tror att du är.
 
