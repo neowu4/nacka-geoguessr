@@ -8,7 +8,8 @@
 *{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden}
 #sv,#pano{position:fixed;inset:0;width:100%;height:100%;border:0}#pano{display:none}
 .key{margin-top:14px;text-align:left;font-size:13px;color:var(--muted)}.key input{width:100%;margin-top:4px;padding:9px 10px;border-radius:8px;border:1px solid #ffffff22;background:var(--bg);color:var(--text);font:inherit}
-#floor{position:fixed;left:0;right:0;bottom:0;height:46%;z-index:4;cursor:not-allowed}
+#floor{position:fixed;inset:0;z-index:4;cursor:grab;touch-action:none}#floor.drag{cursor:grabbing}
+#sv{z-index:1}#sv2{position:fixed;inset:0;width:100%;height:100%;border:0;z-index:0;pointer-events:none}
 #floorhint{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:6;background:var(--panel);border:1px solid #ffffff22;color:var(--muted);font-size:12px;padding:6px 12px;border-radius:999px;pointer-events:none;white-space:nowrap}
 @media (max-width:600px){#floorhint{bottom:auto;top:96px}}
 #mask{position:fixed;top:0;left:0;width:min(380px,70vw);height:86px;background:linear-gradient(90deg,var(--bg) 80%,transparent);z-index:5;pointer-events:auto}
@@ -44,8 +45,8 @@ table{margin:0 auto 14px;border-collapse:collapse;font-size:14px}td{padding:3px 
 .pin{width:18px;height:18px;border-radius:50%;border:3px solid #fff;box-shadow:0 1px 4px #0008}
 @media (max-width:600px){#guessbox{width:calc(100vw - 32px);right:16px}#map{height:150px}#mask{height:70px}#logo{font-size:18px}}
 </style></head><body>
-<iframe id="sv" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe><div id="pano"></div>
-<div id="mask"></div><div id="floor" hidden></div><div id="floorhint" hidden>Ingen gång – dra i övre delen av bilden för att vrida dig</div>
+<iframe id="sv2" referrerpolicy="no-referrer-when-downgrade" tabindex="-1"></iframe><iframe id="sv" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe><div id="pano"></div>
+<div id="mask"></div><div id="floor" hidden></div><div id="floorhint" hidden>Ingen gång – dra för att vrida dig, scrolla för att zooma</div>
 <div id="logo">Nacka<span>Guessr</span></div>
 <div id="reset" style="display:flex;gap:6px"><button id="back" class="ghost" title="Tillbaka till startpunkten">↺ Till start</button><button id="skip" class="ghost" title="Ingen bild? Byt till en annan plats">⇄ Byt plats</button></div>
 <div id="hud"><div class="chip"><small>Runda</small><span id="round">1/5</span></div><div class="chip"><small>Poäng</small><span id="score">0</span></div><div class="chip" id="timerChip" style="display:none"><small>Tid</small><span id="timer">–</span></div></div>
@@ -80,7 +81,27 @@ const rmap=L.map('rmap',{zoomControl:true});tiles().addTo(rmap);outline().addTo(
 function hav(a,b){const R=6371000,r=Math.PI/180,dl=(b.lat-a.lat)*r,dn=(b.lng-a.lng)*r;const h=Math.sin(dl/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(h));}
 function pts(d){if(d<=25)return MAXP;return Math.round(MAXP*Math.exp(-d/1800));}
 function fmt(d){return d<1000?Math.round(d)+' m':(d/1000).toFixed(d<10000?2:1)+' km';}
-function svUrl(p){const h=Math.floor(Math.random()*360);return `https://www.google.com/maps/embed?origin=mfe&pb=!6m7!1m6!2m2!1d${p[0]}!2d${p[1]}!3f${h}!4f0!5f0.8`;}
+let view={h:0,p:0,z:0.8},startView=null;
+function svUrl(p,h=Math.floor(Math.random()*360),pt=0,z=0.8){view={h,p:pt,z};return `https://www.google.com/maps/embed?origin=mfe&pb=!6m7!1m6!2m2!1d${p[0]}!2d${p[1]}!3f${h.toFixed(1)}!4f${pt.toFixed(1)}!5f${z}`;}
+// Ingen gång (NM) utan API-nyckel: ett lager över bilden tar emot all input (så man aldrig kan klicka sig framåt),
+// och vridning görs genom att ladda om samma plats med ny riktning i en dold iframe som byts in när den laddat.
+let swapToken=0;
+function nmShow(){const p=rounds[ri];if(!p)return;const tok=++swapToken;const next=$('sv2'),cur=$('sv');
+ next.onload=()=>{setTimeout(()=>{if(tok!==swapToken)return;cur.id='sv2';next.id='sv';next.style.pointerEvents='';cur.style.transform='';cur.src='about:blank';},1500);};
+ next.src=svUrl(p,view.h,view.p,view.z);}
+(function(){const fl=$('floor');let sx=0,sy=0,drag=false,wheelT=null;
+ const fov=()=>100/view.z**0.6;
+ fl.addEventListener('pointerdown',e=>{drag=true;sx=e.clientX;sy=e.clientY;fl.setPointerCapture(e.pointerId);fl.classList.add('drag');});
+ fl.addEventListener('pointermove',e=>{if(!drag)return;$('sv').style.transform=`translate(${e.clientX-sx}px,${e.clientY-sy}px)`;});
+ const end=e=>{if(!drag)return;drag=false;fl.classList.remove('drag');const dx=e.clientX-sx,dy=e.clientY-sy;
+  if(Math.abs(dx)<4&&Math.abs(dy)<4){$('sv').style.transform='';return;}
+  const k=fov()/innerWidth;view.h=((view.h-dx*k)%360+360)%360;view.p=Math.max(-80,Math.min(80,view.p+dy*k));nmShow();};
+ fl.addEventListener('pointerup',end);fl.addEventListener('pointercancel',end);
+ fl.addEventListener('wheel',e=>{e.preventDefault();view.z=Math.max(0.8,Math.min(3,+(view.z+(e.deltaY<0?0.45:-0.45)).toFixed(2)));clearTimeout(wheelT);wheelT=setTimeout(nmShow,250);},{passive:false});
+ document.addEventListener('keydown',e=>{if(moveMode!==2||GM||!rounds[ri]||$('result').style.display==='flex')return;
+  const st={ArrowLeft:[-30,0],ArrowRight:[30,0],ArrowUp:[0,15],ArrowDown:[0,-15]}[e.key];if(!st)return;e.preventDefault();
+  view.h=((view.h+st[0])%360+360)%360;view.p=Math.max(-80,Math.min(80,view.p+st[1]));nmShow();});
+})();
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 // Områden: varje plats hör till området med närmaste ankarort
 const AREAS=[{"id": "sickla", "name": "Sickla", "sub": "Sickla, Henriksdal, Finntorp, Danvikshem", "a": [[59.3068, 18.121], [59.3121, 18.1084], [59.3091, 18.1385], [59.3149, 18.117]]}, {"id": "forum", "name": "Nacka Forum", "sub": "Nacka Forum, Järla, Storängen", "a": [[59.3098, 18.1641], [59.3093, 18.1565], [59.3067, 18.173]]}, {"id": "jarlaberg", "name": "Jarlaberg", "sub": "Jarlaberg, Nacka strand, Vikdalen", "a": [[59.3163, 18.1704], [59.3165, 18.1583], [59.3142, 18.1552]]}, {"id": "ektorp", "name": "Ektorp & Duvnäs", "sub": "Ektorp, Saltsjö-Duvnäs, Eknäs", "a": [[59.3129, 18.2026], [59.3053, 18.2047], [59.3101, 18.228]]}, {"id": "skuru", "name": "Skuru", "sub": "Skuru, Duvnäs utskog", "a": [[59.3203, 18.2135], [59.3271, 18.2098]]}, {"id": "bjorknas", "name": "Björknäs", "sub": "Björknäs", "a": [[59.3209, 18.2408]]}, {"id": "tollare", "name": "Tollare & Lännersta", "sub": "Tollare, Lännersta", "a": [[59.3026, 18.2359], [59.3062, 18.2595]]}, {"id": "orminge", "name": "Orminge & Boo öst", "sub": "Orminge, Kummelnäs, Hasseludden, Kil, Velamsund, Insjön", "a": [[59.3295, 18.2573], [59.3496, 18.2799], [59.3468, 18.2431], [59.335, 18.3234], [59.3454, 18.3232], [59.3328, 18.3392]]}, {"id": "saltsjobaden", "name": "Saltsjöbaden & Fisksätra", "sub": "Fisksätra, Tattby, Solsidan, Saltsjöbaden", "a": [[59.2922, 18.2538], [59.2793, 18.3049], [59.2796, 18.2804], [59.2651, 18.2964]]}, {"id": "alta", "name": "Älta", "sub": "Älta, Erstavik", "a": [[59.2574, 18.1812], [59.2685, 18.2459]]}];
@@ -95,7 +116,7 @@ function areaPoints(){return selAreas.size?DATA.points.filter(p=>selAreas.has(p.
 let viewBounds=null;
 function pickRounds(){const pool=shuffle(areaPoints().slice());const minD=selAreas.size?600:1500;const out=[];for(const p of pool){if(out.every(q=>hav({lat:p[0],lng:p[1]},{lat:q[0],lng:q[1]})>minD))out.push(p);if(out.length===ROUNDS)break;}for(const p of pool){if(out.length>=ROUNDS)break;if(!out.includes(p))out.push(p);}
  viewBounds=selAreas.size?L.latLngBounds(areaPoints().map(p=>[p[0],p[1]])).pad(.15):bounds;return out;}
-async function loadRound(){let p=rounds[ri];if(GM){p=await gmShow(p);}else{$('sv').src=svUrl(p);}$('round').textContent=`${ri+1}/${ROUNDS}`;$('score').textContent=total.toLocaleString('sv-SE');
+async function loadRound(){let p=rounds[ri];if(GM){p=await gmShow(p);}else{swapToken++;$('sv2').src='about:blank';$('sv').style.transform='';$('sv').src=svUrl(p);startView={...view};}$('round').textContent=`${ri+1}/${ROUNDS}`;$('score').textContent=total.toLocaleString('sv-SE');
  guess=null;if(marker){map.removeLayer(marker);marker=null;}$('guess').disabled=true;$('guess').textContent='Placera en nål på kartan';map.fitBounds(viewBounds||bounds);
  $('sv').style.pointerEvents=moveMode?'auto':'none';$('pano').style.pointerEvents=moveMode?'auto':'none';
  $('floor').hidden=$('floorhint').hidden=!(moveMode===2&&!GM);
@@ -148,7 +169,7 @@ async function gmShow(p){
 $('guess').onclick=()=>{if(guess)submit();};
 $('next').onclick=()=>{if(ri>=ROUNDS){$('result').style.display='none';showStart();return;}ri++;if(ri>=ROUNDS){finish();return;}$('result').style.display='none';loadRound();};
 $('skip').onclick=()=>{if(!rounds[ri]||$('result').style.display==='flex')return;const used=new Set(rounds.map(r=>r.join()));const c=shuffle(areaPoints().filter(q=>!used.has(q.join())))[0];if(c){rounds[ri]=c;clearInterval(tint);loadRound();}};
-$('back').onclick=()=>{if(!rounds[ri])return;if(GM&&startPano){pano.setPano(startPano.id);pano.setPov(startPano.pov);}else $('sv').src=svUrl(rounds[ri]);};
+$('back').onclick=()=>{if(!rounds[ri])return;if(GM&&startPano){pano.setPano(startPano.id);pano.setPov(startPano.pov);}else{swapToken++;$('sv').style.transform='';$('sv').src=startView?svUrl(rounds[ri],startView.h,0,0.8):svUrl(rounds[ri]);}};
 document.addEventListener('keydown',e=>{if(e.code==='Space'&&$('result').style.display==='flex'){e.preventDefault();$('next').click();}else if(e.code==='Space'&&guess&&$('result').style.display!=='flex'){e.preventDefault();submit();}});
 function opt(id,attr,cb){$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>{$(id).querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');cb(+b.dataset[attr]);});}
 opt('timeopts','t',v=>timeLimit=v);opt('moveopts','m',v=>moveMode=v);
