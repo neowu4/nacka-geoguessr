@@ -54,7 +54,7 @@ table{margin:0 auto 14px;border-collapse:collapse;font-size:14px}td{padding:3px 
 <div id="result"><div id="rmap"></div><div id="rpanel"><h2 id="rtitle"></h2><p id="rtext"></p><div class="bar"><i id="rbar"></i></div><div id="rtable"></div><button id="next">Nästa runda</button></div></div>
 <div id="start"><div class="card"><h1>Nacka<span>Guessr</span></h1>
 <p>Du släpps någonstans i Nacka kommun – Sickla, Saltsjöbaden, Boo, Fisksätra, Älta… Titta dig omkring i Street View och sätt en nål där du tror att du är.</p>
-<div class="opts" id="timeopts"><button data-t="0" class="on">Ingen tid</button><button data-t="120">2 min</button><button data-t="60">1 min</button></div>
+<div class="opts" id="timeopts"><button data-t="0" class="on">Ingen tid</button><button data-t="120">2 min</button><button data-t="60">1 min</button><button data-t="30">30 s</button><button data-t="15">15 s</button><button data-t="10">10 s</button><button data-t="5">5 s</button></div>
 <div class="areas" id="areas"></div>
 <div class="opts" id="moveopts"><button data-m="1" class="on">Fri rörelse</button><button data-m="2" title="Du kan vrida och zooma men inte gå">Ingen gång (NM)</button><button data-m="0" title="Du kan varken gå, vrida eller zooma">Låst vy (NMPZ)</button></div>
 <button id="go" style="width:100%">Starta (5 rundor)</button>
@@ -121,7 +121,7 @@ async function loadRound(){let p=rounds[ri];if(GM){p=await gmShow(p);}else{swapT
  $('sv').style.pointerEvents=moveMode?'auto':'none';$('pano').style.pointerEvents=moveMode?'auto':'none';
  $('floor').hidden=$('floorhint').hidden=!(moveMode===2&&!GM);
  clearInterval(tint);if(timeLimit){tleft=timeLimit;$('timerChip').style.display='';tick();tint=setInterval(tick,1000);}else $('timerChip').style.display='none';}
-function tick(){$('timer').textContent=tleft+' s';$('timer').style.color=tleft<=10?'var(--bad)':'';if(tleft--<=0){clearInterval(tint);submit();}}
+function tick(){$('timer').textContent=tleft+' s';$('timer').style.color=tleft<=Math.min(10,Math.ceil(timeLimit/3))?'var(--bad)':'';if(tleft--<=0){clearInterval(tint);submit();}}
 function submit(){clearInterval(tint);const p=rounds[ri],real={lat:p[0],lng:p[1]};let d=null,s=0;
  rlayer.clearLayers();L.marker(real,{icon:pinIcon('#2fbf71')}).addTo(rlayer).bindTooltip(p[2]||'Rätt plats',{permanent:true,direction:'top',offset:[0,-8]});
  if(guess){d=hav(guess,real);s=pts(d);L.marker(guess,{icon:pinIcon('#ffcf3f')}).addTo(rlayer);L.polyline([guess,real],{color:'#1a1a1a',dashArray:'6 6',weight:3}).addTo(rlayer);}
