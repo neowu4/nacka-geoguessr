@@ -30,7 +30,8 @@ python3 -m http.server 8765
 - **Ingen gång (NM):** du kan vrida dig (dra eller piltangenter) och zooma (scrolla) men inte gå. Utan API-nyckel laddas bilden om i nya riktningen när du släpper, så det tar en sekund innan den nya vyn syns.
 - **Låst vy (NMPZ):** du kan inte röra dig eller vrida kameran.
 - **↺ Till start** tar dig tillbaka till startpunkten, **⇄ Byt plats** om en bild inte laddar.
-- Mellanslag = gissa / nästa runda. Ditt rekord sparas i webbläsaren.
+- **Topplista:** topp 5 per karta (varje kombination av valda områden). Kommer du in på listan skriver du ditt namn. Listan sparas i webbläsaren, så den delas av alla som spelar på samma dator eller mobil.
+- Mellanslag = gissa / nästa runda.
 
 ## Valfritt: dölj vägnamnen
 
